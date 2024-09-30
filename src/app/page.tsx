@@ -65,10 +65,13 @@ export default function MultiStepForm() {
     } else {
       console.log("Final Form Data:", data);
       // Submit final form data
-      const res = await fetch("http://localhost:3000/generate", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      const res = await fetch(
+        `${window.location.protocol}//${window.location.host}/generate`,
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+        }
+      );
       const body = await res.json();
       setApiRes(body);
     }
@@ -98,14 +101,14 @@ export default function MultiStepForm() {
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)} className="w-full">
             <CardHeader>
-              <CardTitle>Card Title</CardTitle>
-              <CardDescription>Card Description</CardDescription>
+              <CardTitle>Anime Character Personality Match</CardTitle>
+              <CardDescription>Powered by AI</CardDescription>
             </CardHeader>
             <CardContent>
               {/* Step 1 */}
               {step === 0 && (
                 <>
-                  <h2>Step 1: Personal Information</h2>
+                  <h2>Your personal information</h2>
                   <FormField
                     control={form.control}
                     name="name"
@@ -144,7 +147,7 @@ export default function MultiStepForm() {
                   </Button>
                 )}
                 <Button className="col-span-12 md:col-span-6" type="submit">
-                  Submit
+                  {step > apiData.length - 1 ? "Submit" : "Next"}
                 </Button>
               </div>
             </CardFooter>

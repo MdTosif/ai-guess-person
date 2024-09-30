@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
           e.answer
         }; other options were: ${e.options.join(
           ","
-        )}; Now based on this information guess which anime character user is, please guess any anime character and don't give the reason why you selected it, just say what are the 6 line of similarity between user and that anime character positive and quirky things only no need to relate to the questions answer; use ${
+        )}; Now based on this information guess which one anime character user is, please guess any anime character and don't give the reason why you selected it, just say what are the more than 50 words less than 100 of similarity between user and that anime character positive and quirky things only no need to relate to the questions answer; use ${
           formData.name
         } not user in response; section will be: ## Anime character \\n, ## Anime name \\n, ## Similarities \\n`
     )}
