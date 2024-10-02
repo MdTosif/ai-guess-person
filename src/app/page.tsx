@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { useFieldArray, useForm, UseFormReturn } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -14,7 +14,6 @@ import {
   Form,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,9 +23,10 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { slugify } from "@/lib/utils";
 import { apiData } from "./_helper/data";
 import { formSchema } from "@/lib/schema";
+import RadioFormOptions from "./_components/radio-form-options";
+import { slugify } from "@/lib/utils";
 
 const schema = formSchema;
 
@@ -36,6 +36,7 @@ type SchemaType = z.infer<typeof schema>;
 
 export default function MultiStepForm() {
   const [step, setStep] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const [apiRes, setApiRes] = useState<{ message: string; data: string }>();
 
   // Initialize form for Step 1
@@ -52,29 +53,45 @@ export default function MultiStepForm() {
     name: "qna", // The name of the field array
   });
 
+  useEffect(() => {
+    console.log("appended");
+
+    apiData.forEach(
+      (e, idx) =>
+        fields?.[idx] ??
+        append({
+          question: e.q,
+          answer: "",
+          options: e.a,
+        })
+    );
+  });
+
   // On form submission, advance to the next step or submit
   const onSubmit = async (data: SchemaType) => {
-    if (step < apiData.length) {
-      append({
-        question: apiData[step]?.q,
-        answer: "",
-        options: apiData[step].a,
-      });
+    console.log({ formData: data });
 
+    setIsLoading(true);
+    if (step < apiData.length) {
       setStep(step + 1); // Move to Step 2
     } else {
       console.log("Final Form Data:", data);
-      // Submit final form data
-      const res = await fetch(
-        `${window.location.protocol}//${window.location.host}/generate`,
-        {
-          method: "POST",
-          body: JSON.stringify(data),
-        }
-      );
-      const body = await res.json();
-      setApiRes(body);
+      try {
+        // Submit final form data
+        const res = await fetch(
+          `${window.location.protocol}//${window.location.host}/generate`,
+          {
+            method: "POST",
+            body: JSON.stringify(data),
+          }
+        );
+        const body = await res.json();
+        setApiRes(body);
+      } catch (error) {
+        console.error(error);
+      }
     }
+    setIsLoading(false);
   };
 
   return (
@@ -130,7 +147,16 @@ export default function MultiStepForm() {
 
               {fields.map((field, index) => (
                 <div key={field.id}>
-                  {step === index + 1 && RadioFormOptions(form, index)}
+                  {step === index + 1 && (
+                    <RadioFormOptions
+                      form={form}
+                      index={index}
+                      key={slugify(field.id)}
+                      next={() => {
+                        if (step < apiData.length) setStep(step + 1); // Move to Step 2
+                      }}
+                    />
+                  )}
                 </div>
               ))}
               {/* Step 2 */}
@@ -146,55 +172,21 @@ export default function MultiStepForm() {
                     Back
                   </Button>
                 )}
-                <Button className="col-span-12 md:col-span-6" type="submit">
+                <Button
+                  isLoading={isLoading}
+                  className="col-span-12 md:col-span-6"
+                  type="submit"
+                >
                   {step > apiData.length - 1 ? "Submit" : "Next"}
                 </Button>
+                <p className="col-span-12 w-full">
+                  {step + 1}/{apiData.length + 1}
+                </p>
               </div>
             </CardFooter>
           </form>
         </Form>
       )}
     </Card>
-  );
-}
-
-function RadioFormOptions(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  form: UseFormReturn<SchemaType, any, undefined>,
-  index: number
-): React.ReactNode {
-  return (
-    <>
-      <h2>Answer the question</h2>
-      <FormField
-        control={form.control}
-        name={`qna.${index}.answer`}
-        render={({ field }) => (
-          <FormItem className="space-y-3">
-            <FormLabel>{apiData?.[index]?.q}</FormLabel>
-            <FormControl>
-              <RadioGroup
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                className="flex flex-col space-y-1"
-              >
-                {apiData?.[index]?.a.map((e) => (
-                  <FormItem
-                    key={slugify(e)}
-                    className="flex items-center space-x-3 space-y-0"
-                  >
-                    <FormControl>
-                      <RadioGroupItem value={e} />
-                    </FormControl>
-                    <FormLabel className="font-normal">{e}</FormLabel>
-                  </FormItem>
-                ))}
-              </RadioGroup>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </>
   );
 }

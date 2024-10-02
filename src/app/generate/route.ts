@@ -9,16 +9,18 @@ export async function POST(request: NextRequest) {
   try {
     const data = await request.json(); // Parse JSON body
     const formData = formSchema.parse(data);
-    const prompt = `${formData.qna.map(
-      (e) =>
-        `question: ${e.question}; user chose: ${
-          e.answer
-        }; other options were: ${e.options.join(
-          ","
-        )};`
-    ).join("")} Now based on this information guess which anime character user is; give only one anime character; please guess any anime character and don't give the reason why you selected it, just say what are the more than 50 words less than 100 of similarity between user and that anime character positive and quirky things only; pls keep response between 200 to 300 words; use ${
-          formData.name
-        } not user in response; section will be: ## Anime character \\n, ## Anime name \\n, ## Similarities \\n
+    const prompt = `${formData.qna
+      .map(
+        (e) =>
+          `question: ${e.question}; user chose: ${
+            e.answer
+          }; other options were: ${e.options.join(",")};`
+      )
+      .join(
+        ""
+      )} Now based on this information guess which anime character user is; give only one anime character; please guess any anime character and don't give the reason why you selected it, just say what are the more than 50 words less than 100 of similarity between user and that anime character positive and quirky things only; pls keep response between 200 to 300 words; use ${
+      formData.name
+    } not user in response; section will be: ## Anime character \\n, ## Anime name \\n, ## Similarities \\n
     `;
 
     console.log({ prompt });
@@ -51,6 +53,19 @@ export async function POST(request: NextRequest) {
           },
         }
       );
+
     }
+    return new Response(
+      JSON.stringify({
+        message: "Error while validating",
+        data: error,
+      }),
+      {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 }
