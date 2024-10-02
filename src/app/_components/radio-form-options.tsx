@@ -5,7 +5,7 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { slugify } from "@/lib/utils";
+import { cn, slugify } from "@/lib/utils";
 import { UseFormReturn } from "react-hook-form";
 import { apiData } from "../_helper/data";
 import { z } from "zod";
@@ -49,10 +49,17 @@ export default function RadioFormOptions({
                     key={slugify(e)}
                     className="flex items-center space-x-3 space-y-0"
                   >
-                    <FormControl>
-                      <RadioGroupItem value={e} />
-                    </FormControl>
-                    <FormLabel className="font-normal">{e}</FormLabel>
+                    <FormLabel
+                      className={cn(
+                        "flex items-center gap-2 font-normal border border-primary p-2 rounded-xl w-full",
+                        { "bg-accent": field.value === e }
+                      )}
+                    >
+                      <FormControl>
+                        <RadioGroupItem value={e} />
+                      </FormControl>
+                      <span>{e}</span>
+                    </FormLabel>
                   </FormItem>
                 ))}
               </RadioGroup>

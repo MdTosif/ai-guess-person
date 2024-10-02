@@ -15,6 +15,5 @@ export function slugify(text: string): string {
     .replace(/\-\-+/g, "-") // Replace multiple hyphens with a single hyphen
     .replace(/^-+|-+$/g, ""); // Remove leading and trailing hyphens
 }
-
-// Example usage
-console.log(slugify("Hello World! This is a test.")); // "hello-world-this-is-a-test"
+export const createUniqueId = () =>
+  `input-${Math.random().toString(36).substr(2, 9)}`;

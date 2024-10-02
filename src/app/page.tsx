@@ -100,7 +100,7 @@ export default function MultiStepForm() {
         <>
           <CardHeader>
             <CardTitle>
-              <span className="text-secondary-foreground">
+              <span className="text-primary text-xl capitalize ">
                 {`${form.watch("name").toString()}`}
               </span>
               &apos;s Anime Character Personality Match
