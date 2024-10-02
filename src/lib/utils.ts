@@ -17,3 +17,7 @@ export function slugify(text: string): string {
 }
 export const createUniqueId = () =>
   `input-${Math.random().toString(36).substr(2, 9)}`;
+
+export const randomBetweenRange = (s = 1, e = 5): number => {
+  return Math.floor(Math.random() * e) + s;
+};

@@ -1,33 +1,16 @@
+import { jsonPrompt, promptCreation } from "@/lib/prompt";
 import { formSchema } from "@/lib/schema";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest } from "next/server";
 import { z } from "zod";
-const genAI = new GoogleGenerativeAI(process.env?.GEMINI_API_KEY ?? "");
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json(); // Parse JSON body
     const formData = formSchema.parse(data);
-    const prompt = `${formData.qna
-      .map(
-        (e) =>
-          `question: ${e.question}; user chose: ${
-            e.answer
-          }; other options were: ${e.options.join(",")};`
-      )
-      .join(
-        ""
-      )} Now based on this information guess which anime character user is; give only one anime character; please guess any anime character and don't give the reason why you selected it, just say what are the more than 50 words less than 100 of similarity between user and that anime character positive and quirky things only; pls keep response between 200 to 300 words; use ${
-      formData.name
-    } not user in response; section will be: ## Anime character \\n, ## Anime name \\n, ## Similarities \\n
-    `;
+    const prompt = await promptCreation({ formData });
 
-    console.log({ prompt });
-
-    const result = await model.generateContent(prompt);
-    const resPrompt = result.response.text();
-    console.log(resPrompt);
+    const resPrompt = await jsonPrompt(prompt);
+    console.log(JSON.stringify({ prompt, resPrompt }));
 
     return new Response(
       JSON.stringify({ message: "User created", data: resPrompt }),
@@ -53,7 +36,6 @@ export async function POST(request: NextRequest) {
           },
         }
       );
-
     }
     return new Response(
       JSON.stringify({
