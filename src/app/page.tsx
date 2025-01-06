@@ -35,6 +35,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, LabelList } from "recharts";
+import { ModeToggle } from "@/components/lib/toggle-theme";
 
 const schema = formSchema;
 
@@ -144,13 +145,20 @@ export default function MultiStepForm() {
       {apiRes ? (
         <>
           <CardHeader>
-            <CardTitle>
-              <span className="text-primary text-xl capitalize ">
-                {`${form.watch("name").toString()}`}
-              </span>
-              &apos;s Anime Character Personality Match
-            </CardTitle>
-            <CardDescription>Powered by AI</CardDescription>
+            <div className="flex justify-between">
+              <div>
+                <CardTitle>
+                  <span className="text-primary text-xl capitalize ">
+                    {`${form.watch("name").toString()}`}
+                  </span>
+                  &apos;s Anime Character Personality Match
+                </CardTitle>
+                <CardDescription>Powered by AI</CardDescription>
+              </div>
+              <div>
+                <ModeToggle />
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="">
             <h2>{apiRes.data.title}</h2>
@@ -206,8 +214,15 @@ export default function MultiStepForm() {
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)} className="w-full">
             <CardHeader>
-              <CardTitle>Anime Character Personality Match</CardTitle>
-              <CardDescription>Powered by AI</CardDescription>
+              <div className="flex justify-between">
+                <div>
+                  <CardTitle>Anime Character Personality Match</CardTitle>
+                  <CardDescription>Powered by AI</CardDescription>
+                </div>
+                <div>
+                  <ModeToggle />
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               {/* Step 1 */}
