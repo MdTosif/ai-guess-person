@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, LabelList } from "recharts";
 import { ModeToggle } from "@/components/lib/toggle-theme";
+import Link from "next/link";
 
 const schema = formSchema;
 
@@ -208,7 +209,15 @@ export default function MultiStepForm() {
             </ChartContainer>
             <ReactMarkdown>{apiRes.data.reasoning}</ReactMarkdown>
           </CardContent>
-          <CardFooter></CardFooter>
+          <CardFooter>
+            <Button
+              isLoading={isLoading}
+              className="col-span-12 md:col-span-6"
+              type="submit"
+            >
+              <Link href="/">Retake The Quiz</Link>
+            </Button>
+          </CardFooter>
         </>
       ) : (
         <Form {...form}>
